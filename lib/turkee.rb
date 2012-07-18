@@ -48,7 +48,12 @@ module Turkee
               models << model
               
               logger.debug "param_hash = #{param_hash}"
-              result = model.create(param_hash[model.to_s.underscore])
+
+              result = if turk.on_complete && model.respond_to?(turk.on_complete)
+                model.find_by_id(params["id"]).send(turk.on_complete, params)
+              else
+                model.create(param_hash[model.to_s.underscore])
+              end
 
               # If there's a custom approve? method, see if we should approve the submitted assignment
               #  otherwise just approve it by default
@@ -67,7 +72,7 @@ module Turkee
     end
 
     # Creates a new Mechanical Turk task on AMZN with the given title, desc, etc
-    def self.create_hit(host, hit_title, hit_description, typ, num_assignments, reward, lifetime, duration = nil, qualifications = {}, params = {}, opts = {})
+    def self.create_hit(host, hit_title, hit_description, typ, on_complete, num_assignments, reward, lifetime, duration = nil, qualifications = {}, params = {}, opts = {})
       model    = Object::const_get(typ)
       f_url    = build_url(host, model, params, opts)
 
@@ -91,7 +96,7 @@ module Turkee
                         :hit_lifetime        => lifetime,     :hit_duration => duration,
                         :form_url            => f_url,        :hit_url             => h.url,
                         :hit_id              => h.id,         :task_type           => typ,
-                        :complete            => false)
+                        :complete            => false,        :on_complete         => on_complete)
 
     end
 
