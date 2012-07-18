@@ -15,7 +15,7 @@ module Turkee
 
   class TurkeeTask < ActiveRecord::Base
     attr_accessible :sandbox, :hit_title, :hit_description, :hit_reward, :hit_num_assignments, :hit_lifetime, :hit_duration,
-                    :form_url, :hit_url, :hit_id, :task_type, :complete
+                    :form_url, :hit_url, :hit_id, :task_type, :complete, :on_complete
 
     HIT_FRAMEHEIGHT     = 1000
 
@@ -52,8 +52,8 @@ module Turkee
               result = if turk.on_complete && model.respond_to?(turk.on_complete)
                 model.find_by_id(params["id"]).send(turk.on_complete, params)
               else
-                model.create(param_hash[model.to_s.underscore])
-              end
+                result = model.create(param_hash[model.to_s.underscore])
+
 
               # If there's a custom approve? method, see if we should approve the submitted assignment
               #  otherwise just approve it by default
