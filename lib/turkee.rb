@@ -53,6 +53,7 @@ module Turkee
                 model.find_by_id(params["id"]).send(turk.on_complete, params)
               else
                 result = model.create(param_hash[model.to_s.underscore])
+              end
 
 
               # If there's a custom approve? method, see if we should approve the submitted assignment
