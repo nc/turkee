@@ -11,6 +11,7 @@ module Turkee
 
   # Model simply tracks what assignments have been imported
   class TurkeeImportedAssignment < ActiveRecord::Base
+    attr_accessible :assignment_id, :turkee_task_id, :worker_id, :result_id
   end
 
   class TurkeeTask < ActiveRecord::Base
@@ -50,7 +51,7 @@ module Turkee
               logger.debug "param_hash = #{param_hash}"
 
               result = if turk.on_complete && model.method_defined?(turk.on_complete)
-                model.find_by_id(params["id"]).send(turk.on_complete, params)
+                model.find_by_id(param_hash["id"]).send(turk.on_complete, param_hash)
               else
                 result = model.create(param_hash[model.to_s.underscore])
               end
