@@ -49,7 +49,7 @@ module Turkee
               
               logger.debug "param_hash = #{param_hash}"
 
-              result = if turk.on_complete && model.respond_to?(turk.on_complete)
+              result = if turk.on_complete && model.method_defined?(turk.on_complete)
                 model.find_by_id(params["id"]).send(turk.on_complete, params)
               else
                 result = model.create(param_hash[model.to_s.underscore])
@@ -94,7 +94,7 @@ module Turkee
       TurkeeTask.create(:sandbox             => RTurk.sandbox?,
                         :hit_title           => hit_title,    :hit_description     => hit_description,
                         :hit_reward          => reward.to_f,  :hit_num_assignments => num_assignments.to_i,
-                        :hit_lifetime        => lifetime,     :hit_duration => duration,
+                        :hit_lifetime        => lifetime,     :hit_duration        => duration,
                         :form_url            => f_url,        :hit_url             => h.url,
                         :hit_id              => h.id,         :task_type           => typ,
                         :complete            => false,        :on_complete         => on_complete)
