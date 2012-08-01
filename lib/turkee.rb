@@ -51,7 +51,12 @@ module Turkee
               logger.debug "param_hash = #{param_hash}"
 
               result = if turk.on_complete && model.method_defined?(turk.on_complete)
-                model.find_by_id(param_hash["id"]).send(turk.on_complete, param_hash)
+                ar_obj = model.unscoped.where(id: (param_hash["id"])).first
+                if ar_obj.present?
+                  ar_obj.send(turk.on_complete, param_hash) 
+                else
+                  true
+                end
               else
                 result = model.create(param_hash[model.to_s.underscore])
               end
